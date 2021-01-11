@@ -5,6 +5,9 @@
       <h1 class="title">
         cocktail-idea
       </h1>
+      <v-btn @click="$router.push({name: 'cocktail-cocktail', params: {cocktail: 'Claudine'}})">
+        <v-icon>mdi-arrow-right</v-icon>
+      </v-btn>
       <div class="links">
         <a
           href="https://nuxtjs.org/"

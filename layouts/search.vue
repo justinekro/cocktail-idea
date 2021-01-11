@@ -2,13 +2,10 @@
   <v-app>
     <v-main>
       <v-app-bar dense flat>
-        <v-toolbar-title>Cocktail Idea</v-toolbar-title>
+        <v-icon @click="$router.push('/')">mdi-arrow-left</v-icon>
       </v-app-bar>
 
       <Nuxt />
     </v-main>
   </v-app>
 </template>
-
-<style>
-</style>
