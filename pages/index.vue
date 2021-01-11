@@ -141,7 +141,7 @@
 export default {
   data() {
     return {
-      inputSearch: null,
+      inputSearch: '',
       lastinput: 0,
       searchShow: null,
       searchByIngredient: false,
@@ -152,11 +152,11 @@ export default {
   },
   computed: {
     fakeSearch() {
-      if (this.inputSearch != null && this.inputSearch.length != this.lastinput && this.inputSearch.length != 0) {
+      if (this.inputSearch.length != this.lastinput && this.inputSearch.length != 0) {
         this.lastinput = this.inputSearch.length;
         this.goSearch();
         return this.lastinput
-      } else if (this.inputSearch != null && this.inputSearch.length == 0) {
+      } else if (this.inputSearch.length == 0) {
         this.lastinput = 0;
         this.searchShow = null;
         return 0
