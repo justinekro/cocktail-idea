@@ -31,7 +31,7 @@
         </v-chip-group>
       </v-row>
 
-      <div class="showNewCocktail">
+      <div v-if="searchShow === null" class="showNewCocktail">
         <v-img
           src="https:\/\/www.thecocktaildb.com\/images\/media\/drink\/5noda61589575158.jpg"
           class="image-pub"
