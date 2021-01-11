@@ -1,7 +1,7 @@
 <template>
-  <v-container>
-    <div>
-      <h1 class="mainTitle">Find<br />your Cocktail</h1>
+
+    <div class="container">
+      <h1 class="mainTitle">My Fav<br />Cocktail 🍸</h1>
       <v-row align="center" class="searchBar">
         <div class="searchElement">
           <v-text-field
@@ -31,16 +31,25 @@
         </v-chip-group>
       </v-row>
 
-      <!--<div class="showNewCocktail">
+      <div class="showNewCocktail">
         <v-img
           src="https:\/\/www.thecocktaildb.com\/images\/media\/drink\/5noda61589575158.jpg"
-        ></v-img>
-        <h2>Ready for party ?</h2>
-      </div>-->
+          class="image-pub"
+        >
+        <h2 class="pub-title">Find the best cocktail recipies!</h2>
+        </v-img>
+      </div>
 
       <div v-if="searchShow != null">
-        <div class="itemIter" v-for="(item, index) in searchShow" :key="index">
-          <div>
+        <div class="itemIter" v-for="(item, index) in searchShow" :key="index" 
+        @click="
+              $router.push({
+                name: 'cocktail-cocktail',
+                params: { cocktail: item.idDrink },
+              })
+            ">
+          <div 
+            >
             <v-img
               height="60"
               width="60"
@@ -51,7 +60,9 @@
           <div class="itemName">
             <h2 class="itemTitle">{{ item.strDrink }}</h2>
             <v-chip-group class="chipGroup" v-if="searchByIngredient == false">
-              <v-chip small class="chipElem">{{ item.strAlcoholic }}</v-chip>
+              <v-chip 
+              small class="chipElem"
+              >{{ item.strAlcoholic }}</v-chip>
               <v-chip
                 small
                 v-if="item.strIngredient1.length < 10"
@@ -68,20 +79,59 @@
             </v-chip-group>
           </div>
           <div
-            @click="
-              $router.push({
-                name: 'cocktail-cocktail',
-                params: { cocktail: item.idDrink },
-              })
-            "
+           
             class="itemChevron"
           >
             <v-icon large color="#252525">mdi-chevron-right</v-icon>
           </div>
         </div>
       </div>
+
+     <v-btn
+        elevation="1"
+        outlined
+        @click="fetchRandomCocktail"
+        class="random-button"
+        rounded
+      >
+        Show me a random cocktail!
+      </v-btn>
+    <div class="modal" :style="{ bottom: isOpen ? '0px' : '-500px'}">
+        <v-img :src="randomCocktail.strDrinkThumb" class="image">
+        <div class="cocktail-image-overlay"></div>
+        <v-icon 
+          class="close-icon" 
+          color="white"
+          @click="closeModal"
+          >mdi-close</v-icon>
+        <div class="button-container">
+          
+          <p class="cocktail-title">
+            {{randomCocktail.strDrink}}
+          </p>
+          <v-btn
+            elevation="2"
+            outlined
+            rounded
+            color="white"
+            @click="$router.push({name: 'cocktail-cocktail', params: {cocktail: randomCocktail.idDrink}})"
+          >
+          Check recipe
+          </v-btn>
+          <v-btn
+            elevation="2"
+            outlined
+            rounded
+            color="white"
+            @click="fetchRandomCocktail"
+            class="second-button"
+          >
+            Show me another cocktail
+          </v-btn>
+        </div>
+      </v-img>
     </div>
-  </v-container>
+    </div>
 </template>
 
 <script>
@@ -91,9 +141,10 @@ export default {
       inputSearch: null,
       lastinput: 0,
       searchShow: null,
-
       searchByIngredient: false,
       actualIngredient: "",
+      isOpen: false,
+      randomCocktail: {}
     };
   },
   computed: {
@@ -132,13 +183,35 @@ export default {
           this.actualIngredient = "";
         });
     },
+    fetchRandomCocktail() {
+      this.$axios
+        .$get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+        .then(response => {
+          this.randomCocktail = response.drinks[0]
+          this.isOpen = true
+        })
+    },
+    closeModal() {
+      this.isOpen = false;
+      setTimeout(() => {
+        this.randomCocktail = {}
+      }, 1000) 
+    },
   },
 };
 </script>
 
 <style>
+
+.container {
+  margin: 0 auto;
+  min-height: 100vh;
+  position: relative;
+  padding: 12px !important;
+  overflow: hidden;
+}
+
 .mainTitle {
-  text-transform: uppercase;
   margin-top: 20px;
   margin-bottom: 5px;
   line-height: 30px;
@@ -166,6 +239,7 @@ export default {
   margin-top: 10px;
   margin-bottom: 10px;
   display: flex;
+  cursor: pointer;
 }
 .imageIter {
   border-radius: 10px;
@@ -195,5 +269,81 @@ export default {
 
 .showNewCocktail {
   margin: 10px;
+  border-radius: 30px;
 }
+
+.modal  {
+  width: 100%;
+  border-radius: 30px 30px 0px 0px;
+  height: 500px;
+  background-color: beige;
+  color: black;
+  overflow: hidden;
+  transition: bottom 1s;
+  left: 0px;
+  position: fixed;
+}
+
+.image {
+  height: 500px;
+  width: 100%;
+  object-fit: cover;
+}
+
+.cocktail-image-overlay {
+  height: 500px;
+  width: 100%;
+  background:rgba(0,0,0,0.3);
+  position: absolute;
+}
+
+.button-container {
+  margin-top: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.cocktail-title {
+  font-weight: bold;
+  color: white;
+  font-size: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+  text-align: center;
+  z-index: 2;
+}
+
+.second-button {
+  margin-top: 20px
+}
+
+.close-icon {
+  right: 20px;
+  top: 20px;
+  position: absolute !important;
+}
+
+.random-button {
+  background-color: white !important;
+  position: fixed !important;
+  bottom: 20px;
+  right: 0;
+  left: 0;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+.image-pub {
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  padding: 20px;
+}
+
+.pub-title {
+  color: white !important
+}
+
 </style>
