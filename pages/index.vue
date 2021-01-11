@@ -5,33 +5,83 @@
       <h1 class="title">
         cocktail-idea
       </h1>
-      <v-btn @click="$router.push({name: 'cocktail-cocktail', params: {cocktail: 'Claudine'}})">
+      <!-- <v-btn @click="$router.push({name: 'cocktail-cocktail', params: {cocktail: 'Claudine'}})">
         <v-icon>mdi-arrow-right</v-icon>
+      </v-btn> -->
+     <v-btn
+        elevation="1"
+        fab
+        rounded
+        @click="fetchRandomCocktail"
+      >
+        <v-icon >
+        mdi-shuffle-variant
+        </v-icon>
       </v-btn>
-      <div class="links">
-        <a
-          href="https://nuxtjs.org/"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--green"
-        >
-          Documentation
-        </a>
-        <a
-          href="https://github.com/nuxt/nuxt.js"
-          target="_blank"
-          rel="noopener noreferrer"
-          class="button--grey"
-        >
-          GitHub
-        </a>
-      </div>
+    </div>
+    <div class="modal" :style="{ bottom: isOpen ? '0px' : '-500px', position: 'absolute'}">
+        <v-img :src="randomCocktail.strDrinkThumb" class="image">
+        <v-icon 
+          class="close-icon" 
+          color="white"
+          @click="closeModal"
+          >mdi-close</v-icon>
+        <div class="button-container">
+          
+          <p class="cocktail-title">
+            {{randomCocktail.strDrink}}
+          </p>
+          <v-btn
+            elevation="2"
+            outlined
+            rounded
+            color="white"
+            @click="$router.push({name: 'cocktail-cocktail', params: {cocktail: randomCocktail.idDrink}})"
+          >
+          Check recipe
+          </v-btn>
+          <v-btn
+            elevation="2"
+            outlined
+            rounded
+            color="white"
+            @click="fetchRandomCocktail"
+            class="second-button"
+          >
+            Show me another cocktail
+          </v-btn>
+        </div>
+      </v-img>
     </div>
   </div>
 </template>
 
 <script>
-export default {}
+export default {
+  data() {
+    return {
+      isOpen: false,
+      randomCocktail: {}
+    }
+  },
+  methods: {
+    fetchRandomCocktail() {
+      this.$axios
+        .$get('https://www.thecocktaildb.com/api/json/v1/1/random.php')
+        .then(response => {
+          this.randomCocktail = response.drinks[0]
+          this.isOpen = true
+        })
+    },
+    closeModal() {
+      this.isOpen = false;
+      setTimeout(() => {
+        this.randomCocktail = {}
+      }, 1000)
+      
+    }
+  }
+}
 </script>
 
 <style>
@@ -42,6 +92,8 @@ export default {}
   justify-content: center;
   align-items: center;
   text-align: center;
+  overflow: hidden;
+  position: relative;
 }
 
 .title {
@@ -73,4 +125,49 @@ export default {}
 .links {
   padding-top: 15px;
 }
+
+.modal  {
+  width: 100%;
+  border-radius: 30px 30px 0px 0px;
+  height: 500px;
+  background-color: beige;
+  color: black;
+  overflow: hidden;
+  transition: bottom 1s;
+}
+
+.image {
+  height: 500px;
+  width: 100%;
+  object-fit: cover;
+  background-color: rgba(1,1,1,0.2);
+}
+
+.button-container {
+  margin-top: 200px  
+}
+
+.button-container btn{
+  margin-top: 20px  
+}
+
+.cocktail-title {
+  font-weight: bold;
+  color: white;
+  font-size: 30px;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+.second-button {
+  margin-top: 20px
+}
+
+.close-icon {
+  right: 20px;
+  top: 20px;
+  position: absolute !important;
+}
+
+
 </style>
